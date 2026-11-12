@@ -3,12 +3,12 @@
 Lista viva. Se marca al terminar y se commitea junto con el cambio.
 
 ## Fase 1 · Base
-- [ ] Proyecto Maven + Maven Wrapper + `application.yml` con variables de entorno
-- [ ] Enums: `Rol`, `Categoria`, `Prioridad`, `Estado`, `OrigenAnalisis`
-- [ ] Entidades `Usuario` y `Ticket` (dos relaciones N:1 hacia `Usuario`)
-- [ ] Migración `V1__esquema_inicial.sql` (PK, FK, CHECK, índices)
-- [ ] Repositorios (`TicketRepository` con `JpaSpecificationExecutor`)
-- [ ] Verificado: la app arranca y Hibernate valida el esquema
+- [x] Proyecto Maven + Maven Wrapper + `application.yml` con variables de entorno
+- [x] Enums: `Rol`, `Categoria`, `Prioridad`, `Estado`, `OrigenAnalisis`
+- [x] Entidades `Usuario` y `Ticket` (dos relaciones N:1 hacia `Usuario`)
+- [x] Migración `V1__esquema_inicial.sql` (PK, FK, CHECK, índices)
+- [x] Repositorios (`TicketRepository` con `JpaSpecificationExecutor`)
+- [x] Verificado: la app arranca y Hibernate valida el esquema
 
 ## Fase 2 · Usuarios y tickets (sin IA)
 - [ ] `POST /api/usuarios`, `GET /api/usuarios/{id}`, `GET /api/usuarios` (password con BCrypt, nunca en la respuesta)

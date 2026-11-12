@@ -77,8 +77,8 @@ probado y documentado.
 
 ## Estado del proyecto
 
-- [ ] Proyecto inicializado (Spring Boot 4.1 + dependencias)
-- [ ] Entidades, enums y migración inicial (Flyway)
+- [x] Proyecto inicializado (Spring Boot 4.1 + dependencias)
+- [x] Entidades, enums y migración inicial (Flyway)
 - [ ] CRUD de usuarios
 - [ ] CRUD de tickets (sin IA)
 - [ ] Integración con proveedor de IA real

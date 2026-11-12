@@ -93,6 +93,12 @@ complica cualquier métrica. Transiciones permitidas:
 `RESUELTO → CERRADO | EN_PROCESO`. `CERRADO` es final. Una transición
 inválida responde 409 con un mensaje claro.
 
+### D-13 · Sin Lombok
+**Por qué:** son pocas entidades y el código explícito se lee mejor en una
+revisión. Las entidades no tienen setters públicos: el estado cambia solo
+por métodos con nombre de negocio (`cambiarEstado`, `asignarTecnico`,
+`eliminar`), y así las reglas no se pueden saltar desde afuera.
+
 ---
 
 ## Fuera de alcance a propósito (y por qué)
