@@ -48,7 +48,7 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [x] Diagramas Mermaid: capas, modelo de datos, estados y flujo de creación con IA (validados con la librería de Mermaid)
 - [x] Swagger con springdoc: `/swagger-ui.html`, ejemplos precargados y códigos de error por endpoint
 - [x] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (`db/demo/V2`, se apaga con `FLYWAY_LOCATIONS`)
-- [ ] Revisión final: `git log`, que no haya secretos (`git grep -i "api_key\|password"`)
+- [x] Revisión final: clon limpio desde GitHub siguiendo el README (74 pruebas, app arranca, ejemplos responden), sin secretos en todo el historial
 
 ## Deuda técnica detectada
 - [ ] Prueba que levante el contexto completo de Spring (habría detectado D-22). Necesita una base real: Testcontainers (requiere Docker) o un perfil de pruebas con PostgreSQL.
