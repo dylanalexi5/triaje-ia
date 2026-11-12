@@ -59,9 +59,23 @@ consumido con `RestClient`, sin SDK.
 8. El esquema de base de datos lo manda Flyway. Hibernate solo valida
    (`ddl-auto: validate`), nunca crea ni altera tablas.
 
+## Ciclo de trabajo por cada commit
+
+1. Un cambio pequeño y con un solo propósito.
+2. `./mvnw verify` en verde (compila y pasan todas las pruebas).
+3. Prueba manual del comportamiento nuevo contra la app corriendo
+   (curl o Postman), incluyendo al menos un caso de error.
+4. Commit con mensaje en formato `tipo: descripción` y un cuerpo que
+   explique el porqué.
+5. **Pausa:** se revisa el diff y se valida antes de pasar al siguiente
+   paso. No se encadenan commits sin esa validación.
+
 ## Reglas para trabajar con IA en este repo (anti-alucinación del proceso)
 
 - Cambios acotados: una funcionalidad por sesión, nunca "hazme todo".
+- Toda afirmación técnica se verifica ejecutándola, no leyendo un log.
+  Ejemplo: la carga del `.env` se probó arrancando con el archivo, sin él
+  y con una contraseña incorrecta.
 - Nada se da por hecho sin compilar: `./mvnw verify` antes de cada commit.
 - No se agregan dependencias que no estén justificadas en `DECISIONS.md`.
 - No se inventan endpoints, campos ni enums que no pida el enunciado;
