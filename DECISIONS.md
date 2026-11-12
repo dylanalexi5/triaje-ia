@@ -96,6 +96,15 @@ complica cualquier métrica. Transiciones permitidas:
 `ABIERTO → EN_PROCESO | CERRADO`, `EN_PROCESO → RESUELTO | ABIERTO`,
 `RESUELTO → CERRADO | EN_PROCESO`. `CERRADO` es final. Una transición
 inválida responde 409 con un mensaje claro.
+**Transición al mismo estado (`ABIERTO → ABIERTO`, etc.): inválida, 409.**
+Las 4 combinaciones están en `EstadoTest` como `false`. El mensaje es
+específico: "El ticket ya está en estado ABIERTO".
+*Por qué no 200 idempotente:* si dos técnicos toman el mismo ticket a la
+vez, el segundo debe enterarse de que alguien se le adelantó, en vez de
+recibir un 200 que parece que su acción tuvo efecto. Además, un 200 sin
+cambios actualizaría `fecha_actualizacion` sin que nada haya cambiado.
+*Alternativa descartada:* responder 200 sin tocar nada (PATCH
+idempotente). Es válida, pero esconde el conflicto.
 
 ### D-13 · Sin Lombok
 **Por qué:** son pocas entidades y el código explícito se lee mejor en una

@@ -129,6 +129,16 @@ class TicketServiceTest {
         assertThat(ticket.getEstado()).isEqualTo(Estado.ABIERTO);
     }
 
+    @Test
+    void actualizarEstado_alMismoEstadoSeRechazaConUnMensajeClaro() {
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketAbierto()));
+
+        assertThatThrownBy(() -> ticketService.actualizarEstado(1L, Estado.ABIERTO))
+                .isInstanceOf(TransicionEstadoInvalidaException.class)
+                .hasMessage("El ticket ya está en estado ABIERTO");
+        verify(ticketRepository, never()).flush();
+    }
+
     // --- Asignación de técnico (sección 12) -----------------------------
 
     @Test
