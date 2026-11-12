@@ -101,4 +101,4 @@ probado y documentado.
 - [x] Manejo global de errores
 - [x] Validaciones de entrada
 - [x] Pruebas: los 5 casos mínimos del enunciado (73 pruebas en total)
-- [ ] README + diagrama + colección Postman o Swagger
+- [x] README + diagramas + Swagger + usuarios de demostración

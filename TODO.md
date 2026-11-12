@@ -44,8 +44,8 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [x] Actualización de estado válida e inválida, más las 16 transiciones en `EstadoTest`
 
 ## Fase 6 · Entrega
-- [ ] README completo (los 10 puntos de la sección 13)
-- [ ] Diagrama (Mermaid: entidades + flujo de creación con IA)
+- [x] README completo (los 10 puntos de la sección 13), con respuestas reales capturadas de la app
+- [x] Diagramas Mermaid: capas, modelo de datos, estados y flujo de creación con IA (validados con la librería de Mermaid)
 - [x] Swagger con springdoc: `/swagger-ui.html`, ejemplos precargados y códigos de error por endpoint
 - [x] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (`db/demo/V2`, se apaga con `FLYWAY_LOCATIONS`)
 - [ ] Revisión final: `git log`, que no haya secretos (`git grep -i "api_key\|password"`)

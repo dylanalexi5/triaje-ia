@@ -224,6 +224,18 @@ esquema real queda separado de los datos de prueba.
 `origenAnalisis: IA` sería un dato inventado, porque ninguna IA lo
 clasificó. Los tickets se crean con `POST /api/tickets`.
 
+### D-25 · Zona horaria: la del sistema, configurable con `TZ`
+**Qué pasó:** `application.yml` tenía `hibernate.jdbc.time_zone:
+America/Bogota`, y el primer borrador del README afirmaba que la app usa
+la hora de Colombia. Al verificarlo, las fechas salían en UTC: esa
+propiedad no cambia cómo se genera `LocalDateTime.now()`. Se quitó la
+propiedad.
+**Cómo queda:** las fechas usan la zona de la JVM. Para la hora de
+Colombia se arranca con `TZ=America/Bogota` (verificado: 22:24 UTC pasa
+a 17:24). `TZ` la lee la JVM, así que no sirve en `.env`.
+**Alternativa descartada:** fijar la zona en el código con
+`TimeZone.setDefault`. Ata la app a un país y esconde la configuración.
+
 ---
 
 ## Limitaciones conocidas
@@ -234,6 +246,7 @@ clasificó. Los tickets se crean con `POST /api/tickets`.
   Su resumen es la primera oración de la descripción. Es aceptable como
   respaldo: el ticket siempre se crea y queda marcado como `REGLAS`.
 - **Rol al registrarse:** cualquiera puede crear un ADMIN (D-15).
+- La lista completa de limitaciones está en la sección 11 del README.
 
 ---
 
