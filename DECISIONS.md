@@ -193,7 +193,7 @@ un módulo aparte (`spring-boot-restclient`). El cliente de IA define sus
 propios timeouts, proxy y headers, así que no necesita esa autoconfiguración
 ni una dependencia más.
 **Cómo se encontró:** las pruebas unitarias pasaban; la app real no
-arrancaba. Falta una prueba que levante el contexto completo (ver TODO).
+arrancaba. Falta una prueba que levante el contexto completo (ver README, sección 11).
 
 ### D-23 · Códigos HTTP para estado, asignación y eliminación
 | Caso | Código | Por qué |

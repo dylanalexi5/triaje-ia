@@ -453,7 +453,7 @@ Además: validaciones y formato de error (`UsuarioControllerTest`), BCrypt y cor
 
 ---
 
-Documentos del proceso: [CONTEXT.md](CONTEXT.md) (reglas de arquitectura del proyecto) · [DECISIONS.md](DECISIONS.md) (decisiones y alternativas) · [TODO.md](TODO.md) (plan y estado).
+Documentos del proceso: [CONTEXT.md](CONTEXT.md) (reglas de arquitectura del proyecto) · [DECISIONS.md](DECISIONS.md) (decisiones y alternativas).
 
 ## Autor
 
