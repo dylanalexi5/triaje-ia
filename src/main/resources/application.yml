@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: tickets-ai
+
+  # Lee el .env local si existe; si no (CI, Docker), usa las variables
+  # de entorno del sistema. Ver DECISIONS.md, D-07.
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    # El esquema lo manda Flyway; Hibernate solo comprueba que coincida.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: America/Bogota
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  error:
+    # Respaldo por si algo se escapa del GlobalExceptionHandler:
+    # nunca exponer stack traces ni mensajes internos.
+    include-stacktrace: never
+    include-message: never
+
