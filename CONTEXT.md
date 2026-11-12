@@ -37,8 +37,8 @@ y una integración de IA correctamente desacoplada.
 ## Stack
 
 Java 21, Spring Boot 4.1, Spring Web MVC, Spring Data JPA, PostgreSQL 16,
-Flyway, Maven. Proveedor de IA: Groq (API compatible con OpenAI),
-consumido con `RestClient`, sin SDK.
+Flyway, Maven. Proveedor de IA: Groq (API compatible con OpenAI), modelo
+`openai/gpt-oss-120b`, consumido con `RestClient`, sin SDK.
 
 ## Reglas de arquitectura (no se rompen en ninguna sesión)
 
@@ -96,7 +96,7 @@ probado y documentado.
 - [x] Entidades, enums y migración inicial (Flyway)
 - [x] Registro y consulta de usuarios
 - [~] Tickets: crear, consultar y filtrar ✔ — faltan estado, asignación y eliminación
-- [ ] Integración con proveedor de IA real
+- [x] Integración con proveedor de IA real (Groq, `openai/gpt-oss-120b`) con respaldo automático
 - [x] Clasificador de respaldo por reglas
 - [ ] Manejo global de errores
 - [ ] Validaciones de entrada

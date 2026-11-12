@@ -33,3 +33,10 @@ server:
     include-stacktrace: never
     include-message: never
 
+
+ia:
+  # Sin valor por defecto a propósito: si falta, se clasifica con reglas.
+  api-key: ${AI_API_KEY:}
+  modelo: ${AI_MODEL:openai/gpt-oss-120b}
+  base-url: ${AI_BASE_URL:https://api.groq.com/openai/v1}
+  timeout-segundos: ${AI_TIMEOUT_SECONDS:10}

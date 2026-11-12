@@ -23,22 +23,22 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 ## Fase 3 · IA
 - [x] Interfaz `AnalizadorTicketService` + record `AnalisisTicketResponse` (tal cual el enunciado)
 - [x] `ReglasAnalizadorTicketService` (palabras clave, sin red)
-- [ ] `GroqAnalizadorTicketService` (prompt, timeout, `response_format` JSON)
+- [x] `GroqAnalizadorTicketService` (prompt validado contra la API, timeout, `response_format` JSON, 1 reintento ante 429/5xx)
 - [x] `NormalizadorAnalisis`: valida y limpia la salida de cualquier analizador (D-11)
 - [x] `ClasificadorTicket` como orquestador (D-17), por ahora solo con reglas
-- [ ] `ClasificadorTicket`: intentar IA primero y caer a reglas ante timeout, error o respuesta inválida
-- [ ] Defensa básica contra prompt injection: el texto del usuario va delimitado y el prompt lo declara como dato
+- [x] `ClasificadorTicket`: intentar IA primero y caer a reglas ante timeout, error o respuesta inválida
+- [x] Defensa básica contra prompt injection: el texto del usuario va delimitado y el prompt lo declara como dato (probado con Groq real)
 
 ## Fase 4 · Errores y validaciones
 - [x] `ErrorResponse` con timestamp, status, error, message y path (+ `detalles` en validaciones)
 - [x] `GlobalExceptionHandler` base: 400 (validación, enum inválido, JSON mal formado, tipo de parámetro), 404, 405, 409 y 500 genérico
-- [ ] Completar el handler con los casos de tickets: técnico inválido, transición de estado, error del proveedor de IA
+- [ ] Completar el handler con los casos de tickets: técnico inválido y transición de estado (los errores de la IA se resuelven con el respaldo, D-21)
 - [x] `RecursoNoEncontradoException`, `CorreoDuplicadoException`
 - [ ] `TecnicoInvalidoException` y mapear `TransicionEstadoInvalidaException`
 
 ## Fase 5 · Pruebas (mínimos del enunciado)
 - [x] Creación de ticket (service, clasificador mockeado)
-- [~] Clasificación con IA: normalización de respuestas "sucias" ✔ — falta la caída al respaldo (fase 3)
+- [x] Clasificación con IA (`ClasificadorTicketTest`): resultado de la IA normalizado, caída al respaldo e IA que inventa una categoría
 - [x] Ticket inexistente → 404 con formato correcto (MockMvc)
 - [ ] Técnico sin rol SOPORTE → error
 - [ ] Actualización de estado (válida e inválida)
@@ -49,6 +49,9 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [ ] Swagger con springdoc **o** colección Postman
 - [ ] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (migración `V2`)
 - [ ] Revisión final: `git log`, que no haya secretos (`git grep -i "api_key\|password"`)
+
+## Deuda técnica detectada
+- [ ] Prueba que levante el contexto completo de Spring (habría detectado D-22). Necesita una base real: Testcontainers (requiere Docker) o un perfil de pruebas con PostgreSQL.
 
 ## Opcionales (solo con el núcleo terminado)
 - [ ] Dockerfile + docker-compose (app + Postgres)
