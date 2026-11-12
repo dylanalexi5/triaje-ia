@@ -119,7 +119,7 @@ Para generar el `.jar` y ejecutarlo:
 ```
 
 ```bash
-java -jar target/tickets-ai-0.1.0-SNAPSHOT.jar
+java -jar target/triaje-ia-0.1.0-SNAPSHOT.jar
 ```
 
 ## 5. Endpoints
@@ -454,3 +454,7 @@ Además: validaciones y formato de error (`UsuarioControllerTest`), BCrypt y cor
 ---
 
 Documentos del proceso: [CONTEXT.md](CONTEXT.md) (reglas de arquitectura del proyecto) · [DECISIONS.md](DECISIONS.md) (decisiones y alternativas) · [TODO.md](TODO.md) (plan y estado).
+
+## Autor
+
+**Dylan Rivera** · [github.com/dylanalexi5](https://github.com/dylanalexi5)

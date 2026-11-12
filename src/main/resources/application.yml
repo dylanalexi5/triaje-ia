@@ -1,6 +1,6 @@
 spring:
   application:
-    name: tickets-ai
+    name: triaje-ia
 
   # Lee el .env local si existe; si no (CI, Docker), usa las variables
   # de entorno del sistema. Ver DECISIONS.md, D-07.
