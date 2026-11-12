@@ -51,9 +51,16 @@ public class GlobalExceptionHandler {
 
     // --- 409 ---------------------------------------------------------------
 
-    @ExceptionHandler(CorreoDuplicadoException.class)
-    public ResponseEntity<ErrorResponse> correoDuplicado(CorreoDuplicadoException ex,
-                                                         HttpServletRequest request) {
+    /**
+     * 409: la petición está bien formada, pero choca con el estado actual
+     * del recurso (correo ya usado, ticket cerrado, transición no permitida).
+     */
+    @ExceptionHandler({
+            CorreoDuplicadoException.class,
+            TransicionEstadoInvalidaException.class,
+            TicketCerradoException.class
+    })
+    public ResponseEntity<ErrorResponse> conflicto(RuntimeException ex, HttpServletRequest request) {
         return responder(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
@@ -81,6 +88,13 @@ public class GlobalExceptionHandler {
 
     private static boolean esObligatorio(FieldError error) {
         return "NotBlank".equals(error.getCode()) || "NotNull".equals(error.getCode());
+    }
+
+    /** El enunciado lista "técnico con rol permitido" entre las validaciones (sección 9). */
+    @ExceptionHandler(TecnicoInvalidoException.class)
+    public ResponseEntity<ErrorResponse> tecnicoInvalido(TecnicoInvalidoException ex,
+                                                         HttpServletRequest request) {
+        return responder(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
     /**

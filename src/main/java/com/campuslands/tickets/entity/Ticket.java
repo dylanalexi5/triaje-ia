@@ -1,5 +1,6 @@
 package com.campuslands.tickets.entity;
 
+import com.campuslands.tickets.exception.TicketCerradoException;
 import com.campuslands.tickets.exception.TransicionEstadoInvalidaException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -144,15 +145,23 @@ public class Ticket {
     }
 
     /**
-     * Ojo: aquí no se valida el rol. Esa regla vive en TicketService
-     * (CONTEXT.md, regla 7) para que el error salga con su propio mensaje.
+     * Aquí no se valida el rol: esa regla vive en TicketService (CONTEXT.md,
+     * regla 7). Lo que sí cuida la entidad es su propio estado: un ticket
+     * cerrado ya no se reasigna.
      */
     public void asignarTecnico(Usuario tecnico) {
+        if (estado == Estado.CERRADO) {
+            throw new TicketCerradoException(id);
+        }
         this.tecnicoAsignado = tecnico;
     }
 
     public void eliminar() {
         this.fechaEliminacion = ahora();
+    }
+
+    public boolean estaEliminado() {
+        return fechaEliminacion != null;
     }
 
     public Long getId() {

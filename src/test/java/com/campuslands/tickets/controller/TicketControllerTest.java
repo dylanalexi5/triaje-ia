@@ -6,7 +6,11 @@ import com.campuslands.tickets.entity.Categoria;
 import com.campuslands.tickets.entity.Estado;
 import com.campuslands.tickets.entity.OrigenAnalisis;
 import com.campuslands.tickets.entity.Prioridad;
+import com.campuslands.tickets.entity.Rol;
+import com.campuslands.tickets.entity.Usuario;
 import com.campuslands.tickets.exception.RecursoNoEncontradoException;
+import com.campuslands.tickets.exception.TecnicoInvalidoException;
+import com.campuslands.tickets.exception.TransicionEstadoInvalidaException;
 import com.campuslands.tickets.service.TicketService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +26,15 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -118,5 +126,90 @@ class TicketControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message",
                         containsString("[ABIERTO, EN_PROCESO, RESUELTO, CERRADO]")));
+    }
+
+    @Test
+    void actualizarEstado_devuelve200ConElTicketActualizado() throws Exception {
+        when(ticketService.actualizarEstado(25L, Estado.EN_PROCESO)).thenReturn(ticketDeEjemplo());
+
+        mockMvc.perform(patch("/api/tickets/25/estado")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"estado": "EN_PROCESO"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(25));
+    }
+
+    @Test
+    void actualizarEstado_conUnEstadoQueNoExisteDevuelve400() throws Exception {
+        mockMvc.perform(patch("/api/tickets/25/estado")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"estado": "PENDIENTE"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Valor inválido para 'estado': PENDIENTE")));
+
+        verifyNoInteractions(ticketService);
+    }
+
+    @Test
+    void actualizarEstado_conUnaTransicionNoPermitidaDevuelve409() throws Exception {
+        when(ticketService.actualizarEstado(25L, Estado.ABIERTO))
+                .thenThrow(new TransicionEstadoInvalidaException(Estado.CERRADO, Estado.ABIERTO));
+
+        mockMvc.perform(patch("/api/tickets/25/estado")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"estado": "ABIERTO"}
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("CONFLICT"))
+                .andExpect(jsonPath("$.message").value("No se puede pasar un ticket de CERRADO a ABIERTO"));
+    }
+
+    @Test
+    void asignarTecnico_sinRolSoporteDevuelve400ConElFormatoDelEnunciado() throws Exception {
+        Usuario laura = new Usuario("Laura Gómez", "laura@empresa.com", "hash", Rol.USUARIO);
+        when(ticketService.asignarTecnico(25L, 1L)).thenThrow(new TecnicoInvalidoException(laura));
+
+        mockMvc.perform(patch("/api/tickets/25/asignar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"tecnicoId": 1}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.message", containsString("solo un usuario con rol SOPORTE")))
+                .andExpect(jsonPath("$.path").value("/api/tickets/25/asignar"));
+    }
+
+    @Test
+    void asignarTecnico_sinTecnicoIdDevuelve400() throws Exception {
+        mockMvc.perform(patch("/api/tickets/25/asignar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detalles", hasItem("tecnicoId: El técnico es obligatorio")));
+    }
+
+    @Test
+    void eliminar_devuelve204SinCuerpo() throws Exception {
+        mockMvc.perform(delete("/api/tickets/25"))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+
+        verify(ticketService).eliminar(25L);
+    }
+
+    @Test
+    void eliminar_unTicketInexistenteDevuelve404() throws Exception {
+        doThrow(new RecursoNoEncontradoException("ticket", 99L)).when(ticketService).eliminar(99L);
+
+        mockMvc.perform(delete("/api/tickets/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("No se encontró el ticket con id 99"));
     }
 }

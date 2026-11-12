@@ -15,9 +15,9 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [x] `POST /api/tickets` → 201 + `Location` (clasificación provisional por reglas)
 - [x] `GET /api/tickets` con filtros opcionales `estado`, `categoria`, `prioridad`, `usuarioId` (1 sola consulta SQL, sin N+1)
 - [x] `GET /api/tickets/{id}`
-- [ ] `PATCH /api/tickets/{id}/estado` (con transiciones de D-12)
-- [ ] `PATCH /api/tickets/{id}/asignar` (solo rol SOPORTE)
-- [ ] `DELETE /api/tickets/{id}` → 204 (lógico, D-03)
+- [x] `PATCH /api/tickets/{id}/estado` (con transiciones de D-12, 409 si no se permite)
+- [x] `PATCH /api/tickets/{id}/asignar` (solo rol SOPORTE; un ticket CERRADO no se reasigna)
+- [x] `DELETE /api/tickets/{id}` → 204 (lógico, D-03)
 - [x] `TicketMapper`: entidad → DTO de respuesta
 
 ## Fase 3 · IA
@@ -32,16 +32,16 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 ## Fase 4 · Errores y validaciones
 - [x] `ErrorResponse` con timestamp, status, error, message y path (+ `detalles` en validaciones)
 - [x] `GlobalExceptionHandler` base: 400 (validación, enum inválido, JSON mal formado, tipo de parámetro), 404, 405, 409 y 500 genérico
-- [ ] Completar el handler con los casos de tickets: técnico inválido y transición de estado (los errores de la IA se resuelven con el respaldo, D-21)
+- [x] Handler completo: técnico inválido (400), transición y ticket cerrado (409); los errores de la IA se resuelven con el respaldo (D-21)
 - [x] `RecursoNoEncontradoException`, `CorreoDuplicadoException`
-- [ ] `TecnicoInvalidoException` y mapear `TransicionEstadoInvalidaException`
+- [x] `TecnicoInvalidoException`, `TicketCerradoException` y `TransicionEstadoInvalidaException` mapeadas
 
 ## Fase 5 · Pruebas (mínimos del enunciado)
 - [x] Creación de ticket (service, clasificador mockeado)
 - [x] Clasificación con IA (`ClasificadorTicketTest`): resultado de la IA normalizado, caída al respaldo e IA que inventa una categoría
 - [x] Ticket inexistente → 404 con formato correcto (MockMvc)
-- [ ] Técnico sin rol SOPORTE → error
-- [ ] Actualización de estado (válida e inválida)
+- [x] Técnico sin rol SOPORTE → 400 (service + MockMvc)
+- [x] Actualización de estado válida e inválida, más las 16 transiciones en `EstadoTest`
 
 ## Fase 6 · Entrega
 - [ ] README completo (los 10 puntos de la sección 13)

@@ -12,6 +12,9 @@ import com.campuslands.tickets.entity.Rol;
 import com.campuslands.tickets.entity.Ticket;
 import com.campuslands.tickets.entity.Usuario;
 import com.campuslands.tickets.exception.RecursoNoEncontradoException;
+import com.campuslands.tickets.exception.TecnicoInvalidoException;
+import com.campuslands.tickets.exception.TicketCerradoException;
+import com.campuslands.tickets.exception.TransicionEstadoInvalidaException;
 import com.campuslands.tickets.repository.TicketRepository;
 import com.campuslands.tickets.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
@@ -27,8 +30,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,5 +98,100 @@ class TicketServiceTest {
         assertThatThrownBy(() -> ticketService.buscarPorId(15L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el ticket con id 15");
+    }
+
+    // --- Actualización de estado (sección 12) ---------------------------
+
+    private Ticket ticketAbierto() {
+        return new Ticket("Problema con internet", "No tengo internet desde esta mañana.", laura);
+    }
+
+    @Test
+    void actualizarEstado_conUnaTransicionPermitidaCambiaElEstado() {
+        Ticket ticket = ticketAbierto();
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+
+        TicketResponse respuesta = ticketService.actualizarEstado(1L, Estado.EN_PROCESO);
+
+        assertThat(ticket.getEstado()).isEqualTo(Estado.EN_PROCESO);
+        assertThat(respuesta.estado()).isEqualTo(Estado.EN_PROCESO);
+        verify(ticketRepository).flush();
+    }
+
+    @Test
+    void actualizarEstado_conUnaTransicionNoPermitidaFallaYNoCambiaNada() {
+        Ticket ticket = ticketAbierto();
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+
+        assertThatThrownBy(() -> ticketService.actualizarEstado(1L, Estado.RESUELTO))
+                .isInstanceOf(TransicionEstadoInvalidaException.class)
+                .hasMessage("No se puede pasar un ticket de ABIERTO a RESUELTO");
+        assertThat(ticket.getEstado()).isEqualTo(Estado.ABIERTO);
+    }
+
+    // --- Asignación de técnico (sección 12) -----------------------------
+
+    @Test
+    void asignarTecnico_conRolSoporteLoAsigna() {
+        Ticket ticket = ticketAbierto();
+        Usuario andres = new Usuario("Andrés Pérez", "andres@empresa.com", "hash", Rol.SOPORTE);
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(usuarioRepository.findById(5L)).thenReturn(Optional.of(andres));
+
+        TicketResponse respuesta = ticketService.asignarTecnico(1L, 5L);
+
+        assertThat(ticket.getTecnicoAsignado()).isSameAs(andres);
+        assertThat(respuesta.tecnicoAsignado().nombre()).isEqualTo("Andrés Pérez");
+    }
+
+    @Test
+    void asignarTecnico_sinRolSoporteSeRechazaYElTicketQuedaSinTecnico() {
+        Ticket ticket = ticketAbierto();
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(laura));
+
+        assertThatThrownBy(() -> ticketService.asignarTecnico(1L, 2L))
+                .isInstanceOf(TecnicoInvalidoException.class)
+                .hasMessageContaining("rol USUARIO")
+                .hasMessageContaining("solo un usuario con rol SOPORTE");
+        assertThat(ticket.getTecnicoAsignado()).isNull();
+        verify(ticketRepository, never()).flush();
+    }
+
+    @Test
+    void asignarTecnico_inexistenteDevuelveNoEncontrado() {
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketAbierto()));
+        when(usuarioRepository.findById(77L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ticketService.asignarTecnico(1L, 77L))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario con id 77");
+    }
+
+    @Test
+    void asignarTecnico_aUnTicketCerradoNoSePermite() {
+        Ticket ticket = ticketAbierto();
+        ticket.cambiarEstado(Estado.CERRADO);
+        Usuario andres = new Usuario("Andrés Pérez", "andres@empresa.com", "hash", Rol.SOPORTE);
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(usuarioRepository.findById(5L)).thenReturn(Optional.of(andres));
+
+        assertThatThrownBy(() -> ticketService.asignarTecnico(1L, 5L))
+                .isInstanceOf(TicketCerradoException.class);
+    }
+
+    // --- Eliminación ----------------------------------------------------
+
+    @Test
+    void eliminar_esLogicaNoBorraLaFila() {
+        Ticket ticket = ticketAbierto();
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
+
+        ticketService.eliminar(1L);
+
+        assertThat(ticket.estaEliminado()).isTrue();
+        // Ningún delete de ningún tipo: solo se buscó el ticket y se marcó.
+        verify(ticketRepository).findById(1L);
+        verifyNoMoreInteractions(ticketRepository);
     }
 }

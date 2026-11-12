@@ -186,6 +186,23 @@ ni una dependencia más.
 **Cómo se encontró:** las pruebas unitarias pasaban; la app real no
 arrancaba. Falta una prueba que levante el contexto completo (ver TODO).
 
+### D-23 · Códigos HTTP para estado, asignación y eliminación
+| Caso | Código | Por qué |
+|---|---|---|
+| Transición no permitida (D-12) | 409 | La petición es válida pero choca con el estado actual del ticket |
+| Asignar técnico a un ticket `CERRADO` | 409 | El mismo tipo de conflicto; lo cuida la propia entidad |
+| Técnico sin rol `SOPORTE` | 400 | El enunciado lo lista entre las validaciones (sección 9) |
+| Técnico o ticket inexistente | 404 | Consistente con D-18 |
+| `DELETE` exitoso | 204 | No hay nada que devolver |
+| `DELETE` de un ticket ya eliminado | 404 | Para la API el ticket ya no existe (D-03) |
+
+**Detalle de implementación:** después de un cambio se hace `flush()`
+antes de armar la respuesta. Sin eso, `@PreUpdate` corre al cerrar la
+transacción y el PATCH devolvería la `fechaActualizacion` anterior.
+**Fuera de alcance a propósito:** asignar un técnico no pasa el ticket a
+`EN_PROCESO` por sí solo. Son dos acciones distintas y el enunciado las
+pide por separado.
+
 ---
 
 ## Limitaciones conocidas

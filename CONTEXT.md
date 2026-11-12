@@ -95,10 +95,10 @@ probado y documentado.
 - [x] Proyecto inicializado (Spring Boot 4.1 + dependencias)
 - [x] Entidades, enums y migración inicial (Flyway)
 - [x] Registro y consulta de usuarios
-- [~] Tickets: crear, consultar y filtrar ✔ — faltan estado, asignación y eliminación
+- [x] Tickets: crear, consultar, filtrar, cambiar estado, asignar técnico y eliminar
 - [x] Integración con proveedor de IA real (Groq, `openai/gpt-oss-120b`) con respaldo automático
 - [x] Clasificador de respaldo por reglas
-- [ ] Manejo global de errores
-- [ ] Validaciones de entrada
-- [ ] Pruebas (los 5 casos mínimos del enunciado)
+- [x] Manejo global de errores
+- [x] Validaciones de entrada
+- [x] Pruebas: los 5 casos mínimos del enunciado (73 pruebas en total)
 - [ ] README + diagrama + colección Postman o Swagger

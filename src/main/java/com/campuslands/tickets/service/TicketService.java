@@ -10,6 +10,7 @@ import com.campuslands.tickets.entity.Prioridad;
 import com.campuslands.tickets.entity.Ticket;
 import com.campuslands.tickets.entity.Usuario;
 import com.campuslands.tickets.exception.RecursoNoEncontradoException;
+import com.campuslands.tickets.exception.TecnicoInvalidoException;
 import com.campuslands.tickets.mapper.TicketMapper;
 import com.campuslands.tickets.repository.TicketRepository;
 import com.campuslands.tickets.repository.TicketSpecifications;
@@ -77,6 +78,47 @@ public class TicketService {
                 .stream()
                 .map(TicketMapper::aResponse)
                 .toList();
+    }
+
+    @Transactional
+    public TicketResponse actualizarEstado(Long id, Estado nuevoEstado) {
+        Ticket ticket = obtener(id);
+        ticket.cambiarEstado(nuevoEstado);
+        return guardarYResponder(ticket);
+    }
+
+    /**
+     * Solo un usuario con rol SOPORTE puede atender un ticket. Se valida aquí
+     * y no se confía en que el cliente lo respete (CONTEXT.md, regla 7).
+     */
+    @Transactional
+    public TicketResponse asignarTecnico(Long id, Long tecnicoId) {
+        Ticket ticket = obtener(id);
+        Usuario tecnico = usuarioRepository.findById(tecnicoId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("usuario", tecnicoId));
+
+        if (!tecnico.esSoporte()) {
+            throw new TecnicoInvalidoException(tecnico);
+        }
+
+        ticket.asignarTecnico(tecnico);
+        return guardarYResponder(ticket);
+    }
+
+    /** Eliminación lógica (DECISIONS.md, D-03): el ticket sigue en la tabla, pero la API ya no lo ve. */
+    @Transactional
+    public void eliminar(Long id) {
+        obtener(id).eliminar();
+    }
+
+    /**
+     * El flush manda el UPDATE en este momento, y con él corre @PreUpdate.
+     * Sin esto, la respuesta mostraría la fechaActualizacion anterior, porque
+     * Hibernate solo escribe al cerrar la transacción.
+     */
+    private TicketResponse guardarYResponder(Ticket ticket) {
+        ticketRepository.flush();
+        return TicketMapper.aResponse(ticket);
     }
 
     private Ticket obtener(Long id) {
