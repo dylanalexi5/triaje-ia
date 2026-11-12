@@ -46,7 +46,7 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 ## Fase 6 · Entrega
 - [ ] README completo (los 10 puntos de la sección 13)
 - [ ] Diagrama (Mermaid: entidades + flujo de creación con IA)
-- [ ] Swagger con springdoc **o** colección Postman
+- [x] Swagger con springdoc: `/swagger-ui.html`, ejemplos precargados y códigos de error por endpoint
 - [x] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (`db/demo/V2`, se apaga con `FLYWAY_LOCATIONS`)
 - [ ] Revisión final: `git log`, que no haya secretos (`git grep -i "api_key\|password"`)
 

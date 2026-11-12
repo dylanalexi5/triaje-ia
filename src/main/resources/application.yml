@@ -42,3 +42,9 @@ ia:
   modelo: ${AI_MODEL:openai/gpt-oss-120b}
   base-url: ${AI_BASE_URL:https://api.groq.com/openai/v1}
   timeout-segundos: ${AI_TIMEOUT_SECONDS:10}
+
+springdoc:
+  # Sin esto, springdoc le pega a CADA endpoint todos los errores del
+  # GlobalExceptionHandler (un 409 en GET /usuarios, por ejemplo). Cada
+  # endpoint declara sus propios códigos en el controller.
+  override-with-generic-response: false
