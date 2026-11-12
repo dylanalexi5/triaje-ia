@@ -47,7 +47,7 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [ ] README completo (los 10 puntos de la sección 13)
 - [ ] Diagrama (Mermaid: entidades + flujo de creación con IA)
 - [ ] Swagger con springdoc **o** colección Postman
-- [ ] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (migración `V2`)
+- [x] Datos semilla: 1 ADMIN, 2 SOPORTE, 2 USUARIO (`db/demo/V2`, se apaga con `FLYWAY_LOCATIONS`)
 - [ ] Revisión final: `git log`, que no haya secretos (`git grep -i "api_key\|password"`)
 
 ## Deuda técnica detectada

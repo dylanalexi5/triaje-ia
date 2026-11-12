@@ -212,6 +212,18 @@ transacción y el PATCH devolvería la `fechaActualizacion` anterior.
 `EN_PROCESO` por sí solo. Son dos acciones distintas y el enunciado las
 pide por separado.
 
+### D-24 · Datos de demostración: solo usuarios y en una carpeta aparte
+**Qué:** `db/demo/V2__usuarios_demo.sql` crea 1 ADMIN, 2 SOPORTE y 2
+USUARIO con la contraseña pública `Demo2026!`. Los hashes se generaron
+con el mismo `BCryptPasswordEncoder` de la app y se verificaron contra
+la base.
+**Por qué en otra carpeta:** en producción basta con
+`FLYWAY_LOCATIONS=classpath:db/migration` para que nunca se ejecute; el
+esquema real queda separado de los datos de prueba.
+**Por qué no hay tickets de ejemplo:** un ticket sembrado con
+`origenAnalisis: IA` sería un dato inventado, porque ninguna IA lo
+clasificó. Los tickets se crean con `POST /api/tickets`.
+
 ---
 
 ## Limitaciones conocidas
