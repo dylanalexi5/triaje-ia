@@ -11,7 +11,7 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [x] Verificado: la app arranca y Hibernate valida el esquema
 
 ## Fase 2 · Usuarios y tickets (sin IA)
-- [ ] `POST /api/usuarios`, `GET /api/usuarios/{id}`, `GET /api/usuarios` (password con BCrypt, nunca en la respuesta)
+- [x] `POST /api/usuarios`, `GET /api/usuarios/{id}`, `GET /api/usuarios?rol=` (password con BCrypt, nunca en la respuesta)
 - [ ] `POST /api/tickets` → 201 + `Location`
 - [ ] `GET /api/tickets` con filtros opcionales `estado`, `categoria`, `prioridad`, `usuarioId`
 - [ ] `GET /api/tickets/{id}`
@@ -29,9 +29,11 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [ ] Defensa básica contra prompt injection: el texto del usuario va delimitado y el prompt lo declara como dato
 
 ## Fase 4 · Errores y validaciones
-- [ ] `ErrorResponse` con timestamp, status, error, message y path
-- [ ] `GlobalExceptionHandler`: 400 (validación, enum inválido, JSON mal formado), 404, 409, 422 y 500 genérico sin detalles internos
-- [ ] Excepciones propias: `RecursoNoEncontradoException`, `TecnicoInvalidoException`, `TransicionEstadoInvalidaException`
+- [x] `ErrorResponse` con timestamp, status, error, message y path (+ `detalles` en validaciones)
+- [x] `GlobalExceptionHandler` base: 400 (validación, enum inválido, JSON mal formado, tipo de parámetro), 404, 405, 409 y 500 genérico
+- [ ] Completar el handler con los casos de tickets: técnico inválido, transición de estado, error del proveedor de IA
+- [x] `RecursoNoEncontradoException`, `CorreoDuplicadoException`
+- [ ] `TecnicoInvalidoException` y mapear `TransicionEstadoInvalidaException`
 
 ## Fase 5 · Pruebas (mínimos del enunciado)
 - [ ] Creación de ticket (service, IA mockeada)

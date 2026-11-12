@@ -99,6 +99,29 @@ revisión. Las entidades no tienen setters públicos: el estado cambia solo
 por métodos con nombre de negocio (`cambiarEstado`, `asignarTecnico`,
 `eliminar`), y así las reglas no se pueden saltar desde afuera.
 
+### D-14 · La entrada se limpia antes de validar; un error por campo
+**Por qué:** un correo pegado con un espacio al final es un error de
+digitación, no un correo inválido. Los DTOs quitan los espacios de los
+extremos en su constructor, antes de que corra `@Email`. La contraseña no
+se toca. Además, un campo vacío incumple `@NotBlank` y `@Size` a la vez;
+el handler deja un solo mensaje por campo (gana "es obligatorio") para
+que la respuesta sea siempre la misma.
+**Cómo se encontró:** con la prueba manual contra la app real; las
+pruebas unitarias no lo detectaron.
+
+### D-15 · El rol se elige al registrar (limitación conocida)
+**Por qué:** sin autenticación no hay forma de saber quién está creando
+el usuario, y hacen falta usuarios SOPORTE para asignar tickets. El rol
+es opcional y por defecto es `USUARIO`. **Riesgo asumido:** cualquiera
+puede registrar un ADMIN. Se resuelve con JWT y autorización por roles
+(opcional de la sección 14); queda en las limitaciones del README.
+
+### D-16 · Servicios sin interfaz
+**Por qué:** `UsuarioService` y `TicketService` tienen una sola
+implementación, y Mockito los simula sin problema. Una interfaz para
+cada uno sería ceremonia. La excepción es `AnalizadorTicketService`, que
+sí tiene varias implementaciones y además la pide el enunciado.
+
 ---
 
 ## Fuera de alcance a propósito (y por qué)

@@ -93,7 +93,7 @@ probado y documentado.
 
 - [x] Proyecto inicializado (Spring Boot 4.1 + dependencias)
 - [x] Entidades, enums y migración inicial (Flyway)
-- [ ] CRUD de usuarios
+- [x] Registro y consulta de usuarios
 - [ ] CRUD de tickets (sin IA)
 - [ ] Integración con proveedor de IA real
 - [ ] Clasificador de respaldo por reglas
