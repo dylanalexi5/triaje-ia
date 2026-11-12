@@ -13,12 +13,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,11 +80,9 @@ public class Ticket {
     @Column(name = "origen_analisis", nullable = false, length = 10)
     private OrigenAnalisis origenAnalisis;
 
-    @CreationTimestamp
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
-    @UpdateTimestamp
     @Column(name = "fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
 
@@ -92,6 +91,28 @@ public class Ticket {
 
     protected Ticket() {
         // requerido por JPA
+    }
+
+    /**
+     * Las fechas se asignan a mano y no con @CreationTimestamp/@UpdateTimestamp:
+     * esas anotaciones toman cada una su propio instante, y un ticket recién
+     * creado quedaba con una fecha de actualización microsegundos ANTERIOR a
+     * la de creación. Se truncan a microsegundos, que es lo que guarda
+     * PostgreSQL; si no, el POST y un GET posterior mostrarían fechas distintas.
+     */
+    @PrePersist
+    void alCrear() {
+        fechaCreacion = ahora();
+        fechaActualizacion = fechaCreacion;
+    }
+
+    @PreUpdate
+    void alActualizar() {
+        fechaActualizacion = ahora();
+    }
+
+    private static LocalDateTime ahora() {
+        return LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
     }
 
     public Ticket(String titulo, String descripcion, Usuario usuarioSolicitante) {
@@ -131,7 +152,7 @@ public class Ticket {
     }
 
     public void eliminar() {
-        this.fechaEliminacion = LocalDateTime.now();
+        this.fechaEliminacion = ahora();
     }
 
     public Long getId() {

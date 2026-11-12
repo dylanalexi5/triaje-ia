@@ -12,20 +12,21 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 
 ## Fase 2 · Usuarios y tickets (sin IA)
 - [x] `POST /api/usuarios`, `GET /api/usuarios/{id}`, `GET /api/usuarios?rol=` (password con BCrypt, nunca en la respuesta)
-- [ ] `POST /api/tickets` → 201 + `Location`
-- [ ] `GET /api/tickets` con filtros opcionales `estado`, `categoria`, `prioridad`, `usuarioId`
-- [ ] `GET /api/tickets/{id}`
+- [x] `POST /api/tickets` → 201 + `Location` (clasificación provisional por reglas)
+- [x] `GET /api/tickets` con filtros opcionales `estado`, `categoria`, `prioridad`, `usuarioId` (1 sola consulta SQL, sin N+1)
+- [x] `GET /api/tickets/{id}`
 - [ ] `PATCH /api/tickets/{id}/estado` (con transiciones de D-12)
 - [ ] `PATCH /api/tickets/{id}/asignar` (solo rol SOPORTE)
 - [ ] `DELETE /api/tickets/{id}` → 204 (lógico, D-03)
-- [ ] `TicketMapper`: entidad → DTO de respuesta
+- [x] `TicketMapper`: entidad → DTO de respuesta
 
 ## Fase 3 · IA
-- [ ] Interfaz `AnalizadorTicketService` + record `AnalisisTicketResponse` (tal cual el enunciado)
-- [ ] `ReglasAnalizadorTicketService` (palabras clave, sin red)
+- [x] Interfaz `AnalizadorTicketService` + record `AnalisisTicketResponse` (tal cual el enunciado)
+- [x] `ReglasAnalizadorTicketService` (palabras clave, sin red)
 - [ ] `GroqAnalizadorTicketService` (prompt, timeout, `response_format` JSON)
-- [ ] Normalizador y validador de la salida del modelo (D-11)
-- [ ] `AnalizadorConRespaldo` (Decorator, D-10) como bean `@Primary`
+- [x] `NormalizadorAnalisis`: valida y limpia la salida de cualquier analizador (D-11)
+- [x] `ClasificadorTicket` como orquestador (D-17), por ahora solo con reglas
+- [ ] `ClasificadorTicket`: intentar IA primero y caer a reglas ante timeout, error o respuesta inválida
 - [ ] Defensa básica contra prompt injection: el texto del usuario va delimitado y el prompt lo declara como dato
 
 ## Fase 4 · Errores y validaciones
@@ -36,9 +37,9 @@ Lista viva. Se marca al terminar y se commitea junto con el cambio.
 - [ ] `TecnicoInvalidoException` y mapear `TransicionEstadoInvalidaException`
 
 ## Fase 5 · Pruebas (mínimos del enunciado)
-- [ ] Creación de ticket (service, IA mockeada)
-- [ ] Clasificación con IA (normalización de una respuesta "sucia" del modelo + caída al respaldo)
-- [ ] Ticket inexistente → 404 con formato correcto (MockMvc)
+- [x] Creación de ticket (service, clasificador mockeado)
+- [~] Clasificación con IA: normalización de respuestas "sucias" ✔ — falta la caída al respaldo (fase 3)
+- [x] Ticket inexistente → 404 con formato correcto (MockMvc)
 - [ ] Técnico sin rol SOPORTE → error
 - [ ] Actualización de estado (válida e inválida)
 

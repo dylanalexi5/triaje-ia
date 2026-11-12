@@ -68,7 +68,7 @@ retiene una conexión del pool durante toda la latencia de la IA. Se
 analiza primero y se guarda todo (ticket + análisis) en una sola
 transacción corta. Resultado: el ticket nunca queda guardado "a medias".
 
-### D-10 · Respaldo automático: IA → reglas (patrón Decorator)
+### D-10 · ~~Respaldo automático: IA → reglas (patrón Decorator)~~ — reemplazada por D-17
 **Por qué:** `AnalizadorConRespaldo` implementa la misma interfaz,
 envuelve al analizador de Groq y, ante timeout, error HTTP o respuesta
 inválida, delega en el de reglas. El `TicketService` no sabe que existe
@@ -121,6 +121,32 @@ puede registrar un ADMIN. Se resuelve con JWT y autorización por roles
 implementación, y Mockito los simula sin problema. Una interfaz para
 cada uno sería ceremonia. La excepción es `AnalizadorTicketService`, que
 sí tiene varias implementaciones y además la pide el enunciado.
+
+### D-17 · Orquestador `ClasificadorTicket` en lugar de Decorator (reemplaza D-10)
+**Por qué cambió:** el record del enunciado, `AnalisisTicketResponse`,
+tiene cuatro campos y ninguno dice quién clasificó. Un Decorator que
+implementa la misma interfaz esconde el respaldo, y entonces el ticket
+no puede guardar `origen_analisis`.
+**Cómo queda:** `TicketService` solo conoce a `ClasificadorTicket`. Este
+llama a los analizadores (las dos implementaciones de la interfaz del
+enunciado, sin modificarla), pasa la salida por `NormalizadorAnalisis` y
+devuelve una `Clasificacion` con enums y origen. El intento con la IA y
+el respaldo por reglas viven en un solo lugar.
+
+### D-18 · Solicitante inexistente al crear un ticket: 404
+**Por qué:** el formato de error del enunciado usa 404 para "no se
+encontró", y el mensaje dice qué faltó ("No se encontró el usuario con
+id 99"). Se valida antes de clasificar, para no gastar una llamada a la
+IA en una petición que de todas formas va a fallar.
+**Alternativa considerada:** 422, que es más preciso para una referencia
+inválida dentro del cuerpo, pero es menos conocido y el enunciado no lo usa.
+
+### D-19 · Fechas del ticket asignadas en `@PrePersist`
+**Por qué:** con `@CreationTimestamp` y `@UpdateTimestamp`, cada fecha
+toma su propio instante, y un ticket recién creado quedaba con la fecha
+de actualización microsegundos antes que la de creación. Ahora ambas
+salen del mismo instante, truncado a microsegundos (lo que guarda
+PostgreSQL) para que el POST y un GET posterior coincidan.
 
 ---
 

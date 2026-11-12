@@ -46,7 +46,8 @@ consumido con `RestClient`, sin SDK.
 2. Capas: `controller` → `service` → `repository`. Nada se salta una capa.
 3. El analizador de IA vive en `ai/`, implementa `AnalizadorTicketService`
    (la interfaz del enunciado) y tiene al menos dos implementaciones:
-   la real (proveedor externo) y la de respaldo (reglas).
+   la real (proveedor externo) y la de respaldo (reglas). El resto del
+   sistema solo habla con `ClasificadorTicket` (D-17).
 4. La salida del modelo es **dato no confiable**: se valida contra los
    enums y se limpia antes de tocar la base de datos.
 5. Todo error pasa por un único `@RestControllerAdvice`
@@ -94,9 +95,9 @@ probado y documentado.
 - [x] Proyecto inicializado (Spring Boot 4.1 + dependencias)
 - [x] Entidades, enums y migración inicial (Flyway)
 - [x] Registro y consulta de usuarios
-- [ ] CRUD de tickets (sin IA)
+- [~] Tickets: crear, consultar y filtrar ✔ — faltan estado, asignación y eliminación
 - [ ] Integración con proveedor de IA real
-- [ ] Clasificador de respaldo por reglas
+- [x] Clasificador de respaldo por reglas
 - [ ] Manejo global de errores
 - [ ] Validaciones de entrada
 - [ ] Pruebas (los 5 casos mínimos del enunciado)
