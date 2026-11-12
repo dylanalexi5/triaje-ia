@@ -1,0 +1,27 @@
+# --- Secretos: esto va primero a propósito ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Maven / build ---
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- IDEs ---
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# --- SO ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
